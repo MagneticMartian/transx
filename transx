@@ -3,7 +3,11 @@
 user=$1
 ipadd=$2
 path=$3
-file_list=$4
+ftype=$4
+
+ssh ${user}@${ipadd} << EOF > file_list
+ls $path | grep $ftype
+EOF
 
 curr=$(pwd)
 
@@ -11,12 +15,14 @@ scp ${user}@${ipadd}:${path}/cksm.1 $curr
 
 read -p "Password: " -s pass
 
-files=$(cat $file_list)
+files=$(cat file_list)
 
 for i in $files
 do
     wget -O - ftp://${user}:${pass}@${ipadd}/${path}/$i | tee >(sha256sum >> cksm.2) > $i
 done
+
+rm file_list
 
 awk '{print $1}' cksm.1 > cksm.1.new && awk '{print $1}' cksm.2 > cksm.2.new
 
