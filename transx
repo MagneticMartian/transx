@@ -9,7 +9,7 @@ curr=$(pwd)
 
 scp ${user}@${ipadd}:${path}/cksm.1 $curr
 
-read -ps "Password: " pass
+read -p "Password: " -s pass
 
 files=$(cat $file_list)
 
