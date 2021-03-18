@@ -10,22 +10,18 @@ ls $path | grep $ftype
 EOF
 
 curr=$(pwd)
-
 scp ${user}@${ipadd}:${path}/cksm.1 $curr
 
 read -p "Password: " -s pass
 
 files=$(cat file_list)
-
 for i in $files
 do
     wget -O - ftp://${user}:${pass}@${ipadd}/${path}/$i | tee >(sha256sum >> cksm.2) > $i
 done
 
-rm file_list
-
 awk '{print $1}' cksm.1 > cksm.1.new && awk '{print $1}' cksm.2 > cksm.2.new
-
 val=$(diff cksm.1.new cksm.2.new)
-
 [ -z $val ] && echo "Transfer completed properly"
+
+rm file_list
